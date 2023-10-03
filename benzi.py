@@ -16,29 +16,32 @@ from playsound import playsound
 from os import path
 from datetime import datetime
 import argparse
+import logging
 
 
-def notify(notifier, sound):
+def notify(notifier, logs, sound):
     if sound is not None:
         playsound(sound, 0)
+    logs.info(f"INFO: it is {datetime.now():%H:%M}.")
     notifier.send_sync(title=f"It is {datetime.now():%H:%M}.",
                        message="",
                        icon=(""))
 
 
-def notify_sound_error(notifier, sound_path):
+def notify_sound_error(notifier, logs, sound_path):
+    logs.warning(f"WARNING: file '{sound_path}' not found.")
     notifier.send_sync(title=f"File '{sound_path}' not found.",
                        message="Notifications will play silently.",
                        icon=(""))
 
 
-def get_sound(notifier, sound_path):
+def get_sound(notifier, logs, sound_path):
     if sound_path is None:
         return None
     if path.exists(sound_path):
         return sound_path
     else:
-        notify_sound_error(notifier, sound_path)
+        notify_sound_error(notifier, logs, sound_path)
         return None
 
 
@@ -49,14 +52,24 @@ def get_args():
     return parser.parse_args()
 
 
+def get_logs():
+    logging.basicConfig(format='%(message)s')
+    return logging.getLogger(__name__)
+
+
 def main():
     args = get_args()
+    logs = get_logs()
     notifier = DesktopNotifier("benzi")
-    sound = get_sound(notifier, args.sound)
-    schedule.every().hour.at(":00").do(lambda: notify(notifier, sound))
-    while True:
-        schedule.run_pending()
-        time.sleep(.1)
+    sound = get_sound(notifier, logs, args.sound)
+    schedule.every().hour.at(":00").do(lambda: notify(notifier, logs, sound))
+    try:
+        while True:
+            schedule.run_pending()
+            time.sleep(.1)
+    except KeyboardInterrupt:
+        logs.error('SIGINT received, exiting...')
+        exit(1)
 
 
 if __name__ == "__main__":
