@@ -2,7 +2,7 @@
 
 big ben on your desktop. Cross-platform.
 
-# Dependencies
+## Dependencies
 
 Install the required dependencies with:
 
@@ -10,7 +10,7 @@ Install the required dependencies with:
 pip install -r requirements.txt
 ```
 
-# Usage
+## Usage
 
 ```
 usage: benzi.py [-h] [-s SOUND]
@@ -28,4 +28,13 @@ The script runs synchronously, meaning you will need to run it in the background
 ```sh
 python ./benzi.py &
 disown
+```
+
+## Compiling with Nuitka
+
+`benzi` can be compiled into an executable with [Nuitka](https://nuitka.net/doc/download.html). After installing, simply run:
+
+```sh
+python -m nuitka ./benzi.py  # if nuitka is installed through pip
+nuitka ./benzi.py   # if nuitka is installed globally
 ```
