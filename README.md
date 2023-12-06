@@ -10,6 +10,8 @@ Install the required dependencies with:
 pip install -r requirements.txt
 ```
 
+> Dependency Note: The playsound project looks to be unmaintained, and uses the deprecated setup.py installation method. The requirements file uses taconi's fork (https://github.com/taconi/playsound), which addresses this issue.
+
 ## Usage
 
 ```
