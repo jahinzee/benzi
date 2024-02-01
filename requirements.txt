@@ -1,3 +1,0 @@
-desktop-notifier
-schedule
-playsound@git+https://github.com/taconi/playsound

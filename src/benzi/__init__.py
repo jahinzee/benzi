@@ -11,25 +11,41 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 
-from desktop_notifier import DesktopNotifier
+from os import path
 import schedule
 import time
+import platform
 from playsound import playsound
-from os import path
-from datetime import datetime
 import argparse
-import logging
+from datetime import datetime
+
+if platform.system() == "Windows":
+    from windows_toasts import Toast, WindowsToaster
+else:
+    from desktop_notifier import DesktopNotifier
 
 
-def notify(notifier, title, message):
-    print(f"benzi: {title} {message}")
-    notifier.send_sync(title=title, message=message, icon=(""))
+def get_notifier():
+    def windows_notifier(title, message):
+        print(f"benzi: {title} {message}")
+        toast = Toast()
+        toast.text_fields = [f"{title}\n{message}" if message != "" else f"{title}"]
+        WindowsToaster("benzi").show_toast(toast)
+
+    def unix_notifier(title, message):
+        print(f"benzi: {title} {message}")
+        DesktopNotifier("benzi").send_sync(title=title, message=message, icon=(""))
+
+    if platform.system() == "Windows":
+        return windows_notifier
+    else:
+        return unix_notifier
 
 
 def chime(notifier, sound):
     if sound is not None:
         playsound(sound, 0)
-    notify(notifier, title=f"It is {datetime.now():%H:%M}.", message="")
+    notifier(title=f"It is {datetime.now():%H:%M}.", message="")
 
 
 def get_sound(notifier, sound_path):
@@ -38,8 +54,7 @@ def get_sound(notifier, sound_path):
     if path.exists(sound_path):
         return sound_path
     else:
-        notify(
-            notifier,
+        notifier(
             title=f"File {sound_path} not found.",
             message="Notifications will play silently.",
         )
@@ -52,14 +67,17 @@ def get_args():
         "-s", "--sound", type=str, help="specify a sound file to play on the hour"
     )
     parser.add_argument(
-        "-t", "--test", action="store_true", help="send a test notification on launch and exit"
+        "-t",
+        "--test",
+        action="store_true",
+        help="send a test notification on launch and exit",
     )
     return parser.parse_args()
 
 
 def main():
     args = get_args()
-    notifier = DesktopNotifier("benzi")
+    notifier = get_notifier()
     sound = get_sound(notifier, args.sound)
     chime_lambda = lambda: chime(notifier, sound)
     if args.test:

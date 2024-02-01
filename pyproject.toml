@@ -8,7 +8,7 @@ allow-direct-references = true
 [project]
 name = "benzi"
 description = "big ben on your desktop."
-version = "0.1"
+version = "0.2"
 authors = [
   { name="Jahin Z.", email="jahinzee@outlook.com" }
 ]
@@ -16,7 +16,8 @@ readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.8"
 dependencies = [
-  "desktop-notifier",
+  'desktop-notifier ; platform_system != "Windows"',
+  'windows-toasts ; platform_system == "Windows"',
   "schedule",
   "playsound@git+https://github.com/taconi/playsound"
 ]
