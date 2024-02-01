@@ -14,8 +14,9 @@ import schedule
 import time
 import argparse
 from datetime import datetime
-from notifier import get_notifier
-from player import get_player
+
+from benzi.notifier import get_notifier
+from benzi.player import get_player
 
 
 def chime(notifier, player):

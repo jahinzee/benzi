@@ -10,9 +10,10 @@ License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at https://mozilla.org/MPL/2.0/.
 """
 
-from notifier import get_notifier
 from playsound import playsound
 import os
+
+from benzi.notifier import get_notifier
 
 
 def _audio_player(sound_file):
