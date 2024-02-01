@@ -21,57 +21,57 @@ import argparse
 import logging
 
 
-def notify(notifier, logs, sound):
+def notify(notifier, title, message):
+    print(f"benzi: {title} {message}")
+    notifier.send_sync(title=title, message=message, icon=(""))
+
+
+def chime(notifier, sound):
     if sound is not None:
         playsound(sound, 0)
-    logs.info(f"INFO: it is {datetime.now():%H:%M}.")
-    notifier.send_sync(title=f"It is {datetime.now():%H:%M}.",
-                       message="",
-                       icon=(""))
+    notify(notifier, title=f"It is {datetime.now():%H:%M}.", message="")
 
 
-def notify_sound_error(notifier, logs, sound_path):
-    logs.warning(f"WARNING: file '{sound_path}' not found.")
-    notifier.send_sync(title=f"File '{sound_path}' not found.",
-                       message="Notifications will play silently.",
-                       icon=(""))
-
-
-def get_sound(notifier, logs, sound_path):
+def get_sound(notifier, sound_path):
     if sound_path is None:
         return None
     if path.exists(sound_path):
         return sound_path
     else:
-        notify_sound_error(notifier, logs, sound_path)
+        notify(
+            notifier,
+            title=f"File {sound_path} not found.",
+            message="Notifications will play silently.",
+        )
         return None
 
 
 def get_args():
     parser = argparse.ArgumentParser(description="big ben on your desktop.")
-    parser.add_argument('-s', '--sound', type=str,
-                        help="specify a sound file to play on the hour")
+    parser.add_argument(
+        "-s", "--sound", type=str, help="specify a sound file to play on the hour"
+    )
+    parser.add_argument(
+        "-t", "--test", action="store_true", help="send a test notification on launch and exit"
+    )
     return parser.parse_args()
-
-
-def get_logs():
-    logging.basicConfig(format='%(message)s')
-    return logging.getLogger(__name__)
 
 
 def main():
     args = get_args()
-    logs = get_logs()
     notifier = DesktopNotifier("benzi")
-    sound = get_sound(notifier, logs, args.sound)
-    schedule.every().hour.at(":00").do(lambda: notify(notifier, logs, sound))
+    sound = get_sound(notifier, args.sound)
+    chime_lambda = lambda: chime(notifier, sound)
+    if args.test:
+        chime_lambda()
+        exit(0)
+    schedule.every().hour.at(":00").do(chime_lambda)
     try:
         while True:
             schedule.run_pending()
-            time.sleep(.1)
+            time.sleep(0.1)
     except KeyboardInterrupt:
-        logs.error('SIGINT received, exiting...')
-        exit(1)
+        exit(0)
 
 
 if __name__ == "__main__":
