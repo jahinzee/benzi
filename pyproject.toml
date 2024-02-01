@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[project]
+name = "benzi"
+description = "big ben on your desktop."
+version = "0.0"
+authors = [
+  { name="Jahin Z.", email="jahinzee@outlook.com" }
+]
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.8"
+dependencies = [
+  "desktop-notifier",
+  "schedule",
+  "playsound@git+https://github.com/taconi/playsound"
+]
+
+
+[project.scripts]
+benzi = "benzi:main"

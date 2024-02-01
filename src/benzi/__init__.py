@@ -2,6 +2,8 @@
 
 # benzi: big ben on your desktop.
 #
+# Refer to the pyproject.toml file for versioning and other information.
+#
 # Copyright (C) 2023 jahinzee
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
