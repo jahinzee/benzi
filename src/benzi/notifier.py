@@ -11,6 +11,7 @@ file, You can obtain one at https://mozilla.org/MPL/2.0/.
 """
 
 import platform
+import asyncio
 
 if platform.system() == "Windows":
     from windows_toasts import Toast, WindowsToaster, ToastAudio, AudioSource
@@ -28,7 +29,7 @@ def _windows_notifier(title, message):
 
 def _unix_notifier(title, message):
     print(f"benzi: {title} {message}")
-    DesktopNotifier("benzi").send_sync(title=title, message=message, icon=(""))
+    asyncio.run(DesktopNotifier("benzi").send(title=title, message=message, icon=("")))
 
 
 def get_notifier():

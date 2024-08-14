@@ -10,10 +10,28 @@ License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at https://mozilla.org/MPL/2.0/.
 """
 
-from playsound import playsound
+from contextlib import contextmanager
+import sys
 import os
-
 from benzi.notifier import get_notifier
+
+
+@contextmanager
+def silenced():
+    """Helper context manager; silences all printing"""
+    current_stdout = sys.stdout
+    sys.stdout = open(os.devnull, "w")
+    current_stderr = sys.stderr
+    sys.stderr = open(os.devnull, "w")
+    yield
+    sys.stdout.close()
+    sys.stdout = current_stdout
+    sys.stderr.close()
+    sys.stderr = current_stderr
+
+
+with silenced():
+    from playsound import playsound
 
 
 def _audio_player(sound_file):

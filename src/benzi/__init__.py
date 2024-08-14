@@ -44,7 +44,7 @@ def main():
     args = get_args()
     notifier = get_notifier()
     player = get_player(args.sound)
-    chime_lambda = lambda: chime(notifier, player)
+    chime_lambda = lambda: chime(notifier, player)  # noqa: E731
     if args.test:
         chime_lambda()
         exit(0)
