@@ -11,12 +11,15 @@ file, You can obtain one at https://mozilla.org/MPL/2.0/.
 """
 
 import platform
+from importlib import resources as ilres
+from . import files
 import asyncio
 
 if platform.system() == "Windows":
     from windows_toasts import Toast, WindowsToaster, ToastAudio, AudioSource
 else:
     from desktop_notifier import DesktopNotifier
+    from desktop_notifier.common import Icon
 
 
 def _windows_notifier(title, message):
@@ -29,7 +32,12 @@ def _windows_notifier(title, message):
 
 def _unix_notifier(title, message):
     print(f"benzi: {title} {message}")
-    asyncio.run(DesktopNotifier("benzi").send(title=title, message=message, icon=("")))
+    file_path = str(ilres.files(files) / "icon.png")
+    asyncio.run(
+        DesktopNotifier("benzi?").send(
+            title=title, message=message, icon=Icon(name=file_path)
+        )
+    )
 
 
 def get_notifier():
